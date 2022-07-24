@@ -4,7 +4,6 @@ class SmartNav extends React.Component {
 
     constructor(){
 
-
     }
 }
 
