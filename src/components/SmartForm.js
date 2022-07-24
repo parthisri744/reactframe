@@ -1,230 +1,118 @@
-import InputValidate from "./SmartFormValidation"
-import { useState } from "react";
+import React from "react";
+import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
+import Tooltip from '@mui/material/Tooltip';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
-
-export function InputButton(){
-    return(
-        <>
-            <button className="button is-primary is-outlined">Outlined</button>
-        </>
-    )
-}
-
-export function InputCheckBox(){
-    return(
-        <>
-            <h1>Welcome CheckBox</h1>
-        </>
-    )
-
-}
-
-export function InputColor(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputDate(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputDateTimeLocal(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputEmail(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputFile(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputImage(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputMonth(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputNumber(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-
-export function InputPassword(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputRadioButton(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputRange(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-export function InputReset(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputSearch(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputSubmit(){
-    return(
-        <>
-            <button className="button is-primary is-outlined">Outlined</button>
-        </>
-    )
-
-}
-
-export function InputTel(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function InputText(props){
-    const {label,name,validate } = props;
-    const [errorclass,setErrorClass] = useState("input is-info");
-
-   const  validateForm = event =>{
-    Object.entries(validate).forEach(([key,value])=>{
-        event.target.setAttribute(key,value)
-    })
-    const inpObj = document.getElementById(name);
-    if (!inpObj.checkValidity()) {
-        setErrorClass("input is-danger");
-        document.getElementById(name+"_error").innerHTML = inpObj.validationMessage;
-      } else {
-        document.getElementById(name+"_error").innerHTML = "";
-        setErrorClass("input is-success");
-      } 
+  
+class SmartForm extends React.Component {
+    formData= [];
+    fvalue = {};
+    constructor(props){
+        super(props)
+        this.formData = props.formElements;
+        this.generateState();
+        this.state = {formvalue:this.fvalue,submitted: false}
+        this.generateState();
     }
-   const onTrigger = event => {
-      props.parentacallback(event);
+
+    generateState(){
+        this.formData.map((value,key)=>{
+           this.fvalue[value.index] = ""
+        })
     }
-    return(
-        <>
-        <div className="field control">
-            <label className="">{label}</label>
-            <div className="control">
-                  <input className={errorclass}   type="number" autoComplete="off" id={name}  name={name} onClick={validateForm} onChange={onTrigger} placeholder="Text input" />
-                  <p id={name+"_error"} className="help is-danger"></p>
-            </div>
-        </div>
-        </>
-    )
+
+    handleChange = (event) => {
+        const { formvalue } = this.state;
+        formvalue[event.target.name] = event.target.value;
+        this.setState({ formvalue });
+    }
+
+    handleSubmit = () => {
+        console.log("Form Submitted");
+        this.setState({ submitted: true });
+    }
+
+    handleErrors = () => {
+        console.log("Error Handler");
+    }
+
+    generateForm(){
+        return this.props.formElements.map((value,key)=>{
+            return this.generateFormElement(value,key);
+        })
+    }
+
+    generateFormElement(value,key){
+        switch(value.type){
+            case "text" : return this.InputTextField(value,key);
+            case "email" : return this.InputEmailField(value,key);
+            case "number" :return this.InputNumberField(value,key);
+            case "password" :return this.InputPasswordField(value,key);
+            case "submit" : return this.InputSubmitField(value,key);
+            default : console.log("Invalid Input");
+        }
+    }
+
+    InputTextField(value,key){
+        return(
+                <Grid  item xs={4} sm={4} md={3} key={key}>
+                     <TextValidator margin="normal"  fullWidth id={value.index} value={this.state.formvalue[value.index]}  label={"Enter "+value.label} 
+                      name={value.index} autoComplete="off" validators={[value.validator]} onChange={this.handleChange} errorMessages={[`Please Enter  ${value.label}`]}/>
+                </Grid>
+        )
+    }
+
+    InputEmailField(value,key){
+        return(
+                <Grid  item xs={4} sm={4} md={3} key={key}>
+                     <TextValidator margin="normal" type="email"  fullWidth id={value.index} value={this.state.formvalue[value.index]}  label={"Enter "+value.label} 
+                      name={value.index} autoComplete="off" validators={[value.validator,"isEmail"]} onChange={this.handleChange} errorMessages={[`Please Enter  ${value.label}`,`Please Enter Valid ${value.label}`]}/>
+                </Grid>
+        )
+    }
+
+    InputNumberField(value,key){
+        return(
+                <Grid  item xs={4} sm={4} md={3} key={key}>
+                     <TextValidator margin="normal" type="number" fullWidth id={value.index} value={this.state.formvalue[value.index]}  label={"Enter "+value.label} 
+                      name={value.index} autoComplete="off" validators={[value.validator,"isNumber"]} onChange={this.handleChange} errorMessages={[`Please Enter  ${value.label}`,`Please Enter Valid ${value.label}`]}/>
+                </Grid>
+        )
+    }
+
+    InputPasswordField(value,key){
+        return(
+                <Grid  item xs={4} sm={4} md={3} key={key}>
+                     <TextValidator margin="normal" type="password" fullWidth id={value.index} value={this.state.formvalue[value.index]}  label={"Enter "+value.label} 
+                      name={value.index} autoComplete="off" validators={[value.validator]} onChange={this.handleChange} errorMessages={[`Please Enter  ${value.label}`]}/>
+                </Grid>
+        )
+    }
+
+    InputSubmitField(value,key){
+        return(
+                <Grid  item xs={12} sm={12} md={12} key={key}>
+                     <Tooltip title={value.label} arrow>
+                          <Button variant="contained" type="submit">{value.label}</Button>
+                    </Tooltip>
+                </Grid>
+        )
+    }
+    /** List Of Validation **/
+    /** matchRegexp ,isEmail ,isEmpty, required, trim,isNumber,isFloat,isPositive,minNumber,maxNumber **/ 
+    render(){
+        return(
+            <>
+             <ValidatorForm ref="form" onSubmit={this.handleSubmit} onError={this.handleErrors} >
+                <Grid  container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    {this.generateForm()}
+                </Grid>
+             </ValidatorForm>
+            </>
+        )
+
+    }
 }
 
-export function InputTime(){
-    return(
-        <>
-        
-        </>
-    )
-}
-
-export function InputUrl(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function Inputweek(){
-    return(
-        <>
-        
-        </>
-    )
-
-}
-
-export function Form(){
-return(
-    <>
-    <form>
-        
-    </form>
-    </>
-)
-
-}
-
-// function validateForm(name){
-//     console.log("Name : ",name);
-//     // 
-// }
+export default SmartForm;

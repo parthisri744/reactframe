@@ -1,25 +1,21 @@
-import * as React from 'react';
-import { useState } from "react";
-import {InputText,InputSubmit } from '../../components/SmartForm';
+import React from 'react';
+import SmartForm from '../../components/SmartForm';
 
 function Home(){
-
-    const [formData,SetFormData] = useState({});
-
-   const handlecallback = event => {
-    const name = event.target.name;
-    const value = event.target.value;
-    SetFormData(values => ({...values, [name]: value}));
-    console.log("Form Data ",formData);
-    }
-
+    /** List Of Validation **/
+    /** matchRegexp ,isEmail ,isEmpty, required, trim,isNumber,isFloat,isPositive,minNumber,maxNumber **/ 
+    const formFileds = [
+        {type:"text",index:"username",label:"User Name",validator:'required'},
+        {type:"email",index:"useremail",label:"Email",validator:'required'},
+        {type:"number",index:"userregno",label:"Register No",validator:'required'},
+        {type:"password",index:"userpassword",label:"Password",validator:'required'},
+        {type:"submit",index:"submit",label:"Submit"}
+    ]
     return(
         <>
-            <InputText label="Enter User Name"  name="username" validate={{required:true,min:12}} parentacallback={handlecallback} />
-            <InputText label="Enter User Email"  name="useremail" validate={{required:true,min:12}} parentacallback={handlecallback}/>
-            <InputText label="Enter User Password"  name="userpassword" validate={{required:true,min:12}} parentacallback={handlecallback}/>
-            <InputText label="Enter User Register"  name="userreg" validate={{min:12}} parentacallback={handlecallback}/>      
+            <SmartForm  formElements={formFileds}   />
         </>
     )
 }
+
 export default Home;
